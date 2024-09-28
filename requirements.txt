@@ -1,8 +1,2 @@
-opencv-python-headless
 fastapi
 uvicorn
-paddleocr
-googletrans==4.0.0-rc1
-pandas
-pillow
-streamlit
