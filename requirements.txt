@@ -1,2 +1,8 @@
 fastapi
 uvicorn
+opencv-python-headless
+paddlepaddle
+paddleocr
+googletrans==4.0.0-rc1
+pandas
+pillow
