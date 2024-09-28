@@ -1,5 +1,4 @@
-setuptools
-paddlepaddle==2.6.2
+opencv-python
 paddleocr
 googletrans==4.0.0-rc1
 pandas
