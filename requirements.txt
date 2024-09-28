@@ -1,4 +1,4 @@
-paddlepaddle==2.5.0 -f https://www.paddlepaddle.org.cn/whl/cpu.html
+paddlepaddle==2.6.2
 paddleocr
 googletrans==4.0.0-rc1
 pandas
