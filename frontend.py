@@ -1,33 +1,38 @@
+# frontend.py
+
 import streamlit as st
-from paddleocr import PaddleOCR
-from PIL import Image
-import numpy as np
+import requests
+import pandas as pd
+import io
 
-# Initialize the PaddleOCR model
-ocr = PaddleOCR(use_angle_cls=True, lang='en')  # Set language as needed
+# Streamlit application
+st.title("OCR Invoice Reader")
+st.write("Upload an image of an invoice to extract item names and prices.")
 
-# Streamlit UI
-st.title("Text Extraction from Image")
-st.write("Upload an image to extract text using PaddleOCR.")
-
-# Upload image
+# File uploader
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # Load the image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
+    # Send the file to the FastAPI backend
+    files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
+    response = requests.post("http://127.0.0.1:8000/upload/", files=files)
 
-    # Convert image to numpy array for PaddleOCR
-    img_array = np.array(image)
+    if response.status_code == 200:
+        # Process the response
+        items = response.json()
+        df = pd.DataFrame(items)
 
-    # Perform OCR
-    results = ocr.ocr(img_array, cls=True)
+        # Display DataFrame
+        st.write("Extracted Items:")
+        st.dataframe(df)
 
-    # Display the results
-    st.write("Extracted Text:")
-    for result in results:
-        for line in result:
-            text = line[1][0]
-            confidence = line[1][1]
-            st.write(f"{text} (Confidence: {confidence:.2f})")
+        # Download CSV option
+        csv = df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download CSV",
+            data=csv,
+            file_name='output.csv',
+            mime='text/csv'
+        )
+    else:
+        st.error("Error processing the image.")
